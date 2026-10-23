@@ -1,0 +1,56 @@
+name: build-xbox-llama-8gb
+on:
+  workflow_dispatch:
+    inputs:
+      model_name:
+        description: 'Modello di default (solo nome file)'
+        default: 'mistral-7b-instruct-v0.3.Q4_K_M.gguf'
+        required: false
+
+jobs:
+  build-xbox:
+    runs-on: windows-2022
+    steps:
+      - name: Checkout llama.cpp
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/llama.cpp
+          submodules: recursive
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Configure UWP + D3D12 (Xbox)
+        run: |
+          cmake -B build-xbox -A x64 `
+            -DCMAKE_SYSTEM_NAME=WindowsStore `
+            -DCMAKE_SYSTEM_VERSION=10.0 `
+            -DGGML_D3D12=ON `
+            -DGGML_NATIVE=OFF `
+            -DLLAMA_BUILD_SERVER=ON `
+            -DLLAMA_CURL=ON `
+            -DBUILD_SHARED_LIBS=OFF
+
+      - name: Build Release
+        run: cmake --build build-xbox --config Release -j 4
+
+      - name: Prepare Appx Layout
+        run: |
+          mkdir appx\Assets -Force
+          Copy-Item build-xbox\bin\Release\llama-server.exe appx\
+          Copy-Item build-xbox\bin\Release\*.dll appx\ -ErrorAction SilentlyContinue
+          # Logo finto per far passare il manifest
+          echo "dummy" > appx\Assets\StoreLogo.png
+          echo "dummy" > appx\Assets\Logo.png
+          echo "dummy" > appx\Assets\SmallLogo.png
+          Copy-Item Package.appxmanifest appx\
+
+      - name: Create Appx (MakeAppx)
+        run: |
+          & "C:\Program Files (x86)\Windows Kits\10\bin\10.0.22000.0\x64\makeappx.exe" pack /d appx /p llama-xbox-8gb.appx
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: llama-xbox-8gb-appx
+          path: llama-xbox-8gb.appx
