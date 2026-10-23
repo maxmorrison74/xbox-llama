@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap mp rescap">
+  <Identity Name="LlamaCppXboxServer" Publisher="CN=Max" Version="1.0.0.0" />
+  <mp:PhoneIdentity PhoneProductId="a8d2c3e1-1234-4a5b-9c8d-abcdef123456" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+  <Properties>
+    <DisplayName>llama.cpp Xbox Server</DisplayName>
+    <PublisherDisplayName>Max</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Xbox" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22000.0" />
+  </Dependencies>
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="llama-server.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements DisplayName="llama.cpp Xbox" Description="LLM Server 8GB unlocked" BackgroundColor="transparent" Square150x150Logo="Assets\Logo.png" Square44x44Logo="Assets\SmallLogo.png">
+        <uap:SplashScreen BackgroundColor="black" />
+      </uap:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+    <Capability Name="internetClientServer" />
+    <Capability Name="privateNetworkClientServer" />
+    <!-- SBLOCCA +3.25GB GRAFICA SU SERIES X -->
+    <rescap:Capability Name="hevcPlayback" />
+  </Capabilities>
+</Package>
